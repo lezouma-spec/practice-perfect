@@ -13,7 +13,7 @@ import { PageHeader } from "./route";
 import { tnd, useRole } from "@/lib/clinic";
 
 export const Route = createFileRoute("/_authenticated/revenue")({
-  head: () => ({ meta: [{ title: "Revenus — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Revenus — Dentics" }, { name: "description", content: "Revenus — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Revenus — Dentics" }, { property: "og:description", content: "Revenus — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Revenue,
 });
 

@@ -9,7 +9,7 @@ import { PageHeader } from "./route";
 import { waLink, useSettings } from "@/lib/clinic";
 
 export const Route = createFileRoute("/_authenticated/dashboard")({
-  head: () => ({ meta: [{ title: "Aujourd'hui — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Aujourd'hui — Dentics" }, { name: "description", content: "Aujourd'hui — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Aujourd'hui — Dentics" }, { property: "og:description", content: "Aujourd'hui — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Dashboard,
 });
 

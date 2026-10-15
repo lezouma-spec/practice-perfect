@@ -11,7 +11,7 @@ import { PageHeader } from "./route";
 import { useRole, useSettings } from "@/lib/clinic";
 
 export const Route = createFileRoute("/_authenticated/settings")({
-  head: () => ({ meta: [{ title: "Réglages — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Réglages — Dentics" }, { name: "description", content: "Réglages — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Réglages — Dentics" }, { property: "og:description", content: "Réglages — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Settings,
 });
 

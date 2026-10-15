@@ -11,7 +11,7 @@ import { PatientDialog } from "./patients.index";
 import { extractPatientFromImage } from "@/lib/ocr.functions";
 
 export const Route = createFileRoute("/_authenticated/import")({
-  head: () => ({ meta: [{ title: "Import — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Import — Dentics" }, { name: "description", content: "Import — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Import — Dentics" }, { property: "og:description", content: "Import — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: ImportPage,
 });
 

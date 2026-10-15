@@ -10,6 +10,8 @@ export const Route = createFileRoute("/p/$token")({
   loader: ({ params }) => getPatientShare({ data: { token: params.token } }),
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Votre suivi — Cabinet dentaire" },
       { name: "description", content: "Votre prochain rendez-vous et votre solde." },
       { name: "robots", content: "noindex" },

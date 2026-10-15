@@ -14,7 +14,7 @@ import { useT } from "@/lib/i18n";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/templates")({
-  head: () => ({ meta: [{ title: "Modèles — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Modèles — Dentics" }, { name: "description", content: "Modèles — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Modèles — Dentics" }, { property: "og:description", content: "Modèles — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Templates,
 });
 

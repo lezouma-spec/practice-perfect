@@ -11,6 +11,8 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/auth")({
   head: () => ({
     meta: [
+      { property: "og:type", content: "website" },
+      { name: "twitter:card", content: "summary_large_image" },
       { title: "Connexion — Dentics" },
       { name: "description", content: "Connexion de l'équipe du cabinet." },
       { property: "og:title", content: "Connexion — Dentics" },

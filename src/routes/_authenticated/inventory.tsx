@@ -10,7 +10,7 @@ import { PageHeader } from "./route";
 import { useRole } from "@/lib/clinic";
 
 export const Route = createFileRoute("/_authenticated/inventory")({
-  head: () => ({ meta: [{ title: "Stock — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Stock — Dentics" }, { name: "description", content: "Stock — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Stock — Dentics" }, { property: "og:description", content: "Stock — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Inventory,
 });
 

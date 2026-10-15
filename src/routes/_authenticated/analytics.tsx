@@ -7,7 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { PageHeader } from "./route";
 
 export const Route = createFileRoute("/_authenticated/analytics")({
-  head: () => ({ meta: [{ title: "Statistiques — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Statistiques — Dentics" }, { name: "description", content: "Statistiques — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Statistiques — Dentics" }, { property: "og:description", content: "Statistiques — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Analytics,
 });
 

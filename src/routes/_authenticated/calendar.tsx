@@ -1,6 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { addDays, addWeeks, format, isSameDay, startOfDay, startOfWeek, setHours, differenceInMinutes } from "date-fns";
 import { fr } from "date-fns/locale";
 import { ChevronLeft, ChevronRight, Plus } from "lucide-react";
@@ -13,7 +13,7 @@ import { useRole } from "@/lib/clinic";
 import { cn } from "@/lib/utils";
 
 export const Route = createFileRoute("/_authenticated/calendar")({
-  head: () => ({ meta: [{ title: "Agenda — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Agenda — Dentics" }, { name: "description", content: "Agenda — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Agenda — Dentics" }, { property: "og:description", content: "Agenda — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: CalendarPage,
 });
 
@@ -21,11 +21,12 @@ const START = 8, END = 19, PX = 56; // px per hour
 
 function CalendarPage() {
   const { data: me } = useRole();
-  const [view, setView] = useState<"day" | "week">(typeof window !== "undefined" && window.innerWidth < 768 ? "day" : "week");
+  const [view, setView] = useState<"day" | "week">("week");
+  useEffect(() => { if (window.innerWidth < 768) setView("day"); }, []);
   const [cursor, setCursor] = useState(startOfDay(new Date()));
   const [draft, setDraft] = useState<ApptDraft | null>(null);
-  const days = view === "day" ? [cursor] : Array.from({ length: 6 }, (_, i) => addDays(startOfWeek(cursor, { weekStartsOn: 1 }), i));
-  const from = days[0], to = addDays(days[days.length - 1], 1);
+  const days = view === "day" ? [cursor] : Array.from({ length: 7 }, (_, i) => addDays(startOfWeek(cursor, { weekStartsOn: 1 }), i));
+  const from = days[0] ?? cursor, to = addDays(days[days.length - 1] ?? cursor, 1);
 
   const { data: appts = [] } = useQuery({
     queryKey: ["appts", from.toISOString(), to.toISOString()],
@@ -47,11 +48,11 @@ function CalendarPage() {
               <ToggleGroupItem value="week" className="rounded-lg px-3">Semaine</ToggleGroupItem>
             </ToggleGroup>
             <div className="flex rounded-xl border">
-              <Button variant="ghost" size="icon" onClick={() => move(-1)}><ChevronLeft /></Button>
+              <Button variant="ghost" size="icon" aria-label="Période précédente" onClick={() => move(-1)}><ChevronLeft /></Button>
               <Button variant="ghost" onClick={() => setCursor(startOfDay(new Date()))}>Aujourd'hui</Button>
-              <Button variant="ghost" size="icon" onClick={() => move(1)}><ChevronRight /></Button>
+              <Button variant="ghost" size="icon" aria-label="Période suivante" onClick={() => move(1)}><ChevronRight /></Button>
             </div>
-            <Button className="rounded-xl" onClick={() => setDraft(newDraft(setHours(cursor, 9)))}><Plus /> Nouveau</Button>
+            <Button className="rounded-xl" onClick={() => setDraft(newDraft(new Date(new Date(cursor).setHours(9, 0, 0, 0))))}><Plus /> Nouveau</Button>
           </>
         }
       />
@@ -72,7 +73,7 @@ function CalendarPage() {
           {days.map((d) => (
             <div key={d.toISOString()} className="relative border-l" style={{ height: PX * (END - START) }}>
               {Array.from({ length: (END - START) * 2 }, (_, i) => (
-                <button key={i} aria-label="Ajouter" onClick={() => setDraft(newDraft(new Date(d.getTime() + (START * 60 + i * 30) * 60000)))}
+                <button key={i} aria-label={`Ajouter le ${format(d, "dd/MM")} à ${START + Math.floor(i / 2)}:${i % 2 ? "30" : "00"}`} onClick={() => setDraft(newDraft(new Date(d.getTime() + (START * 60 + i * 30) * 60000)))}
                   className={cn("block w-full transition-colors hover:bg-primary-soft/60", i % 2 === 1 ? "border-b" : "border-b border-dashed border-border/50")} style={{ height: PX / 2 }} />
               ))}
               {appts.filter((a) => isSameDay(new Date(a.starts_at), d)).map((a) => {

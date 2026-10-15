@@ -22,7 +22,7 @@ import { PayBadge } from "@/components/PayBadge";
 import { MEDICATIONS, PLAN_TYPES, TREATMENT_TYPES, payStatus, tnd, useRole, useSettings, waLink } from "@/lib/clinic";
 
 export const Route = createFileRoute("/_authenticated/patients/$id")({
-  head: () => ({ meta: [{ title: "Dossier patient — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Dossier patient — Dentics" }, { name: "description", content: "Dossier patient — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Dossier patient — Dentics" }, { property: "og:description", content: "Dossier patient — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: PatientPage,
 });
 

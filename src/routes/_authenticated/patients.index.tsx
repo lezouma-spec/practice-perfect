@@ -14,7 +14,7 @@ import { payStatus, PAY_LABEL, tnd } from "@/lib/clinic";
 import { PayBadge } from "@/components/PayBadge";
 
 export const Route = createFileRoute("/_authenticated/patients/")({
-  head: () => ({ meta: [{ title: "Patients — Dentics" }] }),
+  head: () => ({ meta: [{ title: "Patients — Dentics" }, { name: "description", content: "Patients — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Patients — Dentics" }, { property: "og:description", content: "Patients — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: Patients,
 });
 
@@ -68,21 +68,26 @@ function Patients() {
   );
 }
 
-export function PatientDialog({ open, onOpenChange, initial }: { open: boolean; onOpenChange: (o: boolean) => void; initial?: Partial<z.infer<typeof patientSchema>> & { id?: string } }) {
+export function PatientDialog({ open, onOpenChange, initial, onSaved }: { open: boolean; onOpenChange: (o: boolean) => void; initial?: (Partial<z.infer<typeof patientSchema>> & { id?: string }) | undefined; onSaved?: ((patient: { id: string; full_name: string }) => void) | undefined }) {
   const qc = useQueryClient();
   const empty = { full_name: "", phone: "", birth_date: "", address: "", cnam_number: "", allergies: "", notes: "" };
   const [f, setF] = useState({ ...empty, ...stripNulls(initial) });
+  const [saving, setSaving] = useState(false);
   const [key, setKey] = useState(initial);
   if (key !== initial) { setKey(initial); setF({ ...empty, ...stripNulls(initial) }); }
 
   async function save() {
     const p = patientSchema.safeParse(f);
-    if (!p.success) { toast.error(p.error.issues[0].message); return; }
-    const row = Object.fromEntries(Object.entries(p.data).map(([k, v]) => [k, v === "" ? null : v])) as z.infer<typeof patientSchema>;
-    const { error } = initial?.id
-      ? await supabase.from("patients").update(row).eq("id", initial.id)
-      : await supabase.from("patients").insert({ ...row, full_name: p.data.full_name });
-    if (error) { toast.error(error.message); return; }
+    if (!p.success) { toast.error(p.error.issues[0]?.message ?? "Champs invalides"); return; }
+    setSaving(true);
+    const row = { full_name: p.data.full_name, phone: p.data.phone || null, birth_date: p.data.birth_date || null, address: p.data.address || null, cnam_number: p.data.cnam_number || null, allergies: p.data.allergies || null, notes: p.data.notes || null };
+    const result = initial?.id
+      ? await supabase.from("patients").update(row).eq("id", initial.id).select("id, full_name").single()
+      : await supabase.from("patients").insert(row).select("id, full_name").single();
+    setSaving(false);
+    if (result.error) { toast.error(result.error.message); return; }
+    onSaved?.(result.data);
+    if (!initial?.id) setF(empty);
     toast.success("Patient enregistré");
     qc.invalidateQueries();
     onOpenChange(false);
@@ -105,7 +110,7 @@ export function PatientDialog({ open, onOpenChange, initial }: { open: boolean; 
           <div className="sm:col-span-2">{field("address", "Adresse")}</div>
           <div className="sm:col-span-2">{field("notes", "Notes")}</div>
         </div>
-        <Button className="mt-2 h-11 rounded-xl" onClick={save}>Enregistrer</Button>
+        <Button className="mt-2 h-11 rounded-xl" disabled={saving} onClick={save}>Enregistrer</Button>
       </DialogContent>
     </Dialog>
   );
