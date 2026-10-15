@@ -1,0 +1,4 @@
+- [ ] Import existing dental experience preserving colors, fonts, and features.
+- [ ] Isolate independent clinics and repair signup/settings/public booking.
+- [ ] Repair navigation and calendar client creation, editing, and conflicts.
+- [ ] Verify core workflows and report missing existing-data exports.
