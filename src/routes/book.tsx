@@ -36,11 +36,11 @@ function Book() {
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     const p = schema.safeParse(form);
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) { toast.error(p.error.issues[0].message); return; }
     setLoading(true);
     const { error } = await supabase.from("booking_requests").insert({ full_name: p.data.full_name, phone: p.data.phone, preferred: p.data.preferred || null });
     setLoading(false);
-    if (error) return toast.error("Envoi impossible, réessayez.");
+    if (error) { toast.error("Envoi impossible, réessayez."); return; }
     setDone(true);
   }
 

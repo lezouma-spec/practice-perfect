@@ -135,7 +135,7 @@ function PrintPage() {
               <table className="w-full text-left text-sm">
                 <thead><tr className="border-b text-muted-foreground"><th className="py-2">{t("Date")}</th><th>{t("Soin")}</th><th>{t("Médicaments")}</th><th className="text-right">{t("Coût")}</th><th className="text-right">{t("Payé")}</th></tr></thead>
                 <tbody>
-                  {data.visits!.map((v) => (
+                  {data.visits?.map((v) => (
                     <tr key={v.id} className="border-b"><td className="py-2">{format(new Date(v.visit_date), "dd/MM/yyyy")}</td><td>{v.treatment}{v.tooth ? ` (${v.tooth})` : ""}</td><td>{v.medications}</td><td className="text-right">{tnd(v.cost)}</td><td className="text-right">{tnd(v.amount_paid)}</td></tr>
                   ))}
                 </tbody>

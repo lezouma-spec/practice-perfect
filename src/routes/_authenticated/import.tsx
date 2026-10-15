@@ -27,7 +27,7 @@ function toDate(v: unknown): string | null {
   if (v instanceof Date) return v.toISOString().slice(0, 10);
   const s = String(v);
   const m = s.match(/^(\d{1,2})[/.-](\d{1,2})[/.-](\d{4})$/);
-  if (m) return `${m[3]}-${m[2].padStart(2, "0")}-${m[1].padStart(2, "0")}`;
+  if (m) return `${m[3]}-${(m[2] ?? "").padStart(2, "0")}-${(m[1] ?? "").padStart(2, "0")}`;
   return /^\d{4}-\d{2}-\d{2}/.test(s) ? s.slice(0, 10) : null;
 }
 
@@ -43,7 +43,10 @@ function ImportPage() {
   async function onExcel(file: File) {
     const XLSX = await import("xlsx");
     const wb = XLSX.read(await file.arrayBuffer(), { cellDates: true });
-    const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(wb.Sheets[wb.SheetNames[0]]);
+    const first = wb.SheetNames[0];
+    const sheet = first ? wb.Sheets[first] : undefined;
+    if (!sheet) throw new Error("Fichier vide");
+    const json = XLSX.utils.sheet_to_json<Record<string, unknown>>(sheet);
     const parsed = json.map((r) => {
       const dateKey = Object.keys(r).find((k) => /naiss|birth|date/i.test(k));
       return {
@@ -53,7 +56,7 @@ function ImportPage() {
         address: pick(r, ["adresse", "address", "ville"]),
         cnam_number: pick(r, ["cnam", "assur"]),
       };
-    }).filter((r) => r.full_name.length >= 2).slice(0, 5000);
+    }).filter((r) => r["full_name"].length >= 2).slice(0, 5000);
     setRows(parsed);
     if (!parsed.length) toast.error("Aucune colonne « Nom » reconnue");
   }
@@ -61,7 +64,7 @@ function ImportPage() {
   async function importRows() {
     setBusy(true);
     for (let i = 0; i < rows.length; i += 200) {
-      const { error } = await supabase.from("patients").insert(rows.slice(i, i + 200).map((r) => ({ ...r, full_name: r.full_name.slice(0, 120) })));
+      const { error } = await supabase.from("patients").insert(rows.slice(i, i + 200).map((r) => ({ ...r, full_name: r["full_name"].slice(0, 120) })));
       if (error) { setBusy(false); return toast.error(error.message); }
     }
     setBusy(false);
@@ -75,10 +78,10 @@ function ImportPage() {
     try {
       const image = await resize(file);
       const r = await ocr({ data: { image } });
-      setRaw(r.raw_text ?? "");
+      setRaw(r["raw_text"] ?? "");
       setDraft({
-        full_name: r.full_name ?? "", phone: r.phone ?? "", birth_date: r.birth_date ?? "", address: r.address ?? "",
-        allergies: r.allergies ?? "", notes: [r.notes, r.raw_text ? `Texte lu : ${r.raw_text}` : ""].filter(Boolean).join("\n").slice(0, 2000),
+        full_name: r["full_name"] ?? "", phone: r["phone"] ?? "", birth_date: r["birth_date"] ?? "", address: r["address"] ?? "",
+        allergies: r["allergies"] ?? "", notes: [r["notes"], r["raw_text"] ? `Texte lu : ${r["raw_text"]}` : ""].filter(Boolean).join("\n").slice(0, 2000),
       });
     } catch (e) {
       toast.error(e instanceof Error ? e.message : "Lecture impossible");
@@ -102,7 +105,7 @@ function ImportPage() {
             <>
               <div className="mt-4 max-h-60 overflow-auto rounded-xl border text-sm">
                 <table className="w-full"><thead className="sticky top-0 bg-muted text-left"><tr><th className="p-2">Nom</th><th>Téléphone</th><th>Naissance</th></tr></thead>
-                  <tbody>{rows.slice(0, 100).map((r, i) => <tr key={i} className="border-t"><td className="p-2">{r.full_name}</td><td>{r.phone}</td><td>{r.birth_date}</td></tr>)}</tbody></table>
+                  <tbody>{rows.slice(0, 100).map((r, i) => <tr key={i} className="border-t"><td className="p-2">{r["full_name"]}</td><td>{r["phone"]}</td><td>{r["birth_date"]}</td></tr>)}</tbody></table>
               </div>
               <Button className="mt-4 w-full rounded-xl" disabled={busy} onClick={importRows}>{busy && <Loader2 className="animate-spin" />}Importer {rows.length} patients</Button>
             </>
@@ -133,6 +136,9 @@ async function resize(file: File): Promise<string> {
   const scale = Math.min(1, 1600 / Math.max(img.width, img.height));
   const c = document.createElement("canvas");
   c.width = img.width * scale; c.height = img.height * scale;
-  c.getContext("2d")!.drawImage(img, 0, 0, c.width, c.height);
+  const ctx = c.getContext("2d");
+  if (!ctx) throw new Error("Lecture impossible");
+  ctx.drawImage(img, 0, 0, c.width, c.height);
+  URL.revokeObjectURL(img.src);
   return c.toDataURL("image/jpeg", 0.85);
 }

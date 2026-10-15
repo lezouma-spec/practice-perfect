@@ -39,7 +39,7 @@ function Templates() {
   });
 
   function go() {
-    if (!patient) return toast.error("Choisissez un patient");
+    if (!patient) { toast.error("Choisissez un patient"); return; }
     navigate({ to: "/print/$kind/$id", params: { kind, id: patient }, search: { days, text: text || undefined, lines: kind === "quote" ? lines : undefined } });
   }
 

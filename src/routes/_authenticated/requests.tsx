@@ -27,7 +27,7 @@ function Requests() {
       if (!exist) await supabase.from("patients").insert({ full_name: r.full_name, phone: r.phone });
     }
     const { error } = await supabase.from("booking_requests").update({ status }).eq("id", r.id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success(status === "confirmed" ? "Patient ajouté — fixez le créneau dans l'agenda" : "Demande écartée");
     qc.invalidateQueries();
   }

@@ -52,9 +52,9 @@ function RevenueInner() {
 
   async function addExpense() {
     const amount = Number(f.amount);
-    if (!f.label.trim() || !(amount > 0)) return toast.error("Libellé et montant requis");
+    if (!f.label.trim() || !(amount > 0)) { toast.error("Libellé et montant requis"); return; }
     const { error } = await supabase.from("expenses").insert({ label: f.label.trim().slice(0, 100), amount, expense_date: f.expense_date });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setF({ ...f, label: "", amount: "" });
     qc.invalidateQueries({ queryKey: ["revenue"] });
   }

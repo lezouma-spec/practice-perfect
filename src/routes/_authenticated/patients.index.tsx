@@ -77,12 +77,12 @@ export function PatientDialog({ open, onOpenChange, initial }: { open: boolean; 
 
   async function save() {
     const p = patientSchema.safeParse(f);
-    if (!p.success) return toast.error(p.error.issues[0].message);
+    if (!p.success) { toast.error(p.error.issues[0].message); return; }
     const row = Object.fromEntries(Object.entries(p.data).map(([k, v]) => [k, v === "" ? null : v])) as z.infer<typeof patientSchema>;
     const { error } = initial?.id
       ? await supabase.from("patients").update(row).eq("id", initial.id)
       : await supabase.from("patients").insert({ ...row, full_name: p.data.full_name });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Patient enregistré");
     qc.invalidateQueries();
     onOpenChange(false);

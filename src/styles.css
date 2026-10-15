@@ -55,7 +55,7 @@
 }
 
 :root {
-  --radius: 0.875rem;
+  --radius: 0.5rem;
   --background: oklch(0.985 0.004 220);
   --foreground: oklch(0.24 0.03 235);
   --card: oklch(1 0 0);
@@ -104,7 +104,7 @@
     font-family: var(--font-sans);
     -webkit-font-smoothing: antialiased;
   }
-  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: -0.015em; }
+  h1, h2, h3, h4 { font-family: var(--font-display); letter-spacing: 0; }
 }
 
 @utility font-display { font-family: var(--font-display); }
@@ -116,12 +116,6 @@
   border-radius: var(--radius-xl);
   box-shadow: var(--shadow-soft);
 }
-@utility bg-hero {
-  background: radial-gradient(1200px 500px at 10% -10%, oklch(0.93 0.04 205 / 0.8), transparent 60%),
-    radial-gradient(900px 400px at 100% 0%, oklch(0.94 0.03 240 / 0.7), transparent 60%),
-    var(--color-background);
-}
-
 @keyframes fade-up { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
 @utility animate-fade-up { animation: fade-up 0.35s ease-out both; }
 
@@ -132,3 +126,6 @@
   * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
   .print-sheet { box-shadow: none !important; border: none !important; margin: 0 !important; padding: 0 !important; max-width: none !important; }
 }
+
+@utility bg-hero { background: var(--background); }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }

@@ -65,19 +65,19 @@ function PatientPage() {
   async function del(table: "visits" | "treatment_plans" | "prescriptions", rid: string) {
     if (!confirm("Supprimer définitivement ?")) return;
     const { error } = await supabase.from(table).delete().eq("id", rid);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["patient", id] });
   }
   async function delPatient() {
     if (!confirm(`Supprimer le dossier de ${p.full_name} et tout son historique ?`)) return;
     const { error } = await supabase.from("patients").delete().eq("id", id);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries();
     navigate({ to: "/patients" });
   }
   async function pay(vid: string, amount: number) {
     const { error } = await supabase.from("visits").update({ amount_paid: amount }).eq("id", vid);
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     qc.invalidateQueries({ queryKey: ["patient", id] });
   }
 
@@ -211,11 +211,11 @@ function Empty({ text }: { text: string }) {
 
 function PlanForm({ patientId }: { patientId: string }) {
   const qc = useQueryClient();
-  const [type, setType] = useState(PLAN_TYPES[0]);
+  const [type, setType] = useState(PLAN_TYPES[0] ?? "Autre");
   const [details, setDetails] = useState("");
   async function add() {
     const { error } = await supabase.from("treatment_plans").insert({ patient_id: patientId, treatment_type: type, details: details.trim().slice(0, 500) || null });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setDetails("");
     qc.invalidateQueries({ queryKey: ["patient", patientId] });
   }
@@ -233,16 +233,16 @@ function PlanForm({ patientId }: { patientId: string }) {
 
 function VisitDialog({ open, onOpenChange, patientId }: { open: boolean; onOpenChange: (o: boolean) => void; patientId: string }) {
   const qc = useQueryClient();
-  const empty = { visit_date: format(new Date(), "yyyy-MM-dd"), treatment: TREATMENT_TYPES[0], tooth: "", details: "", medications: "", cost: "", amount_paid: "", cnam_eligible: true };
+  const empty = { visit_date: format(new Date(), "yyyy-MM-dd"), treatment: TREATMENT_TYPES[0] ?? "Consultation", tooth: "", details: "", medications: "", cost: "", amount_paid: "", cnam_eligible: true };
   const [f, setF] = useState(empty);
   async function save() {
     const cost = Number(f.cost || 0), paid = Number(f.amount_paid || 0);
-    if (cost < 0 || paid < 0) return toast.error("Montants invalides");
+    if (!Number.isFinite(cost) || !Number.isFinite(paid) || cost < 0 || paid < 0 || paid > cost) { toast.error("Montants invalides"); return; }
     const { error } = await supabase.from("visits").insert({
       patient_id: patientId, visit_date: f.visit_date, treatment: f.treatment, tooth: f.tooth || null, details: f.details || null,
       medications: f.medications || null, cost, amount_paid: paid, cnam_eligible: f.cnam_eligible,
     });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     toast.success("Soin enregistré");
     setF(empty);
     qc.invalidateQueries();
@@ -280,9 +280,9 @@ function RxDialog({ open, onOpenChange, patientId }: { open: boolean; onOpenChan
   const [custom, setCustom] = useState("");
   const [notes, setNotes] = useState("");
   async function save() {
-    if (!items.length) return toast.error("Ajoutez au moins un médicament");
+    if (!items.length) { toast.error("Ajoutez au moins un médicament"); return; }
     const { data, error } = await supabase.from("prescriptions").insert({ patient_id: patientId, items, notes: notes || null }).select("id").single();
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setItems([]); setNotes("");
     qc.invalidateQueries({ queryKey: ["patient", patientId] });
     onOpenChange(false);

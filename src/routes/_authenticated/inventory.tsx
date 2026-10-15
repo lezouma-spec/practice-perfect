@@ -29,9 +29,9 @@ function Inventory() {
     qc.invalidateQueries({ queryKey: ["inventory"] });
   }
   async function add() {
-    if (!f.name.trim()) return toast.error("Nom requis");
+    if (!f.name.trim()) { toast.error("Nom requis"); return; }
     const { error } = await supabase.from("inventory_items").insert({ name: f.name.trim().slice(0, 100), unit: f.unit || "unité", quantity: Number(f.quantity || 0), min_quantity: Number(f.min_quantity || 5) });
-    if (error) return toast.error(error.message);
+    if (error) { toast.error(error.message); return; }
     setF({ name: "", unit: "", quantity: "", min_quantity: "" });
     qc.invalidateQueries({ queryKey: ["inventory"] });
   }

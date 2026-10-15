@@ -54,7 +54,7 @@ export function useSettings() {
   return useQuery({
     queryKey: ["settings"],
     queryFn: async () => {
-      const { data, error } = await supabase.from("clinic_settings").select("*").eq("id", 1).maybeSingle();
+      const { data, error } = await supabase.from("clinic_settings").select("*").maybeSingle();
       if (error) throw error;
       return data;
     },

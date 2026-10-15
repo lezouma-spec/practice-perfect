@@ -24,13 +24,13 @@ function Settings() {
   useEffect(() => { if (s) setF({ doctor_name: s.doctor_name, clinic_name: s.clinic_name, address: s.address ?? "", phone: s.phone ?? "", matricule: s.matricule ?? "", stamp_data: s.stamp_data ?? "", signature_data: s.signature_data ?? "" }); }, [s]);
 
   async function save() {
-    const { error } = await supabase.from("clinic_settings").update({ ...f, stamp_data: f.stamp_data || null, signature_data: f.signature_data || null, updated_at: new Date().toISOString() }).eq("id", 1);
-    if (error) return toast.error(error.message);
+    const { error } = await supabase.from("clinic_settings").update({ ...f, stamp_data: f.stamp_data || null, signature_data: f.signature_data || null, updated_at: new Date().toISOString() }).eq("id", s?.id ?? "");
+    if (error) { toast.error(error.message); return; }
     toast.success("Réglages enregistrés");
     qc.invalidateQueries({ queryKey: ["settings"] });
   }
   async function onImg(file: File, key: "stamp_data" | "signature_data") {
-    if (file.size > 3_000_000) return toast.error("Image trop lourde (max 3 Mo)");
+    if (file.size > 3_000_000) { toast.error("Image trop lourde (max 3 Mo)"); return; }
     const url = await new Promise<string>((res) => { const r = new FileReader(); r.onload = () => res(r.result as string); r.readAsDataURL(file); });
     setF((x) => ({ ...x, [key]: url }));
   }

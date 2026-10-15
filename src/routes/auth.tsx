@@ -34,12 +34,12 @@ function AuthPage() {
     if (mode === "in") {
       const { error } = await supabase.auth.signInWithPassword({ email, password });
       setLoading(false);
-      if (error) return toast.error("Email ou mot de passe incorrect");
+      if (error) { toast.error("Email ou mot de passe incorrect"); return; }
       navigate({ to: "/dashboard" });
     } else {
       const { data, error } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: `${window.location.origin}/dashboard` } });
       setLoading(false);
-      if (error) return toast.error(error.message);
+      if (error) { toast.error(error.message); return; }
       if (data.session) navigate({ to: "/dashboard" });
       else toast.success("Vérifiez votre email pour confirmer le compte.");
     }

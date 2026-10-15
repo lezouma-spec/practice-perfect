@@ -62,7 +62,7 @@ function Dashboard() {
               <li key={a.id} className="flex items-center gap-4 py-3">
                 <span className="w-14 font-display text-lg font-semibold text-primary">{format(new Date(a.starts_at), "HH:mm")}</span>
                 <div className="min-w-0 flex-1">
-                  <Link to="/patients/$id" params={{ id: a.patients!.id }} className="font-medium hover:text-primary">{a.patients?.full_name}</Link>
+                  <Link to="/patients/$id" params={{ id: a.patients?.id ?? "" }} className="font-medium hover:text-primary">{a.patients?.full_name}</Link>
                   <p className="truncate text-sm text-muted-foreground">{a.reason || "Consultation"}</p>
                 </div>
                 {a.status === "done" && <span className="rounded-full bg-success-soft px-2.5 py-0.5 text-xs text-success">Terminé</span>}
