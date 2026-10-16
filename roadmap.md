@@ -1,5 +1,7 @@
-- [ ] Import existing dental experience preserving colors, fonts, and features.
-- [ ] Isolate independent clinics and repair signup/settings/public booking.
-- [ ] Repair navigation and calendar client creation, editing, and conflicts.
-- [ ] Research and add branded booking pages with doctor, cabinet, phone, and only available slots.
-- [ ] Verify core workflows and report missing existing-data exports.
+- [x] Import existing dental experience preserving colors, fonts, and features.
+- [x] Isolate independent clinics and repair signup/settings/public booking.
+- [x] Repair navigation and calendar client creation, editing, and conflicts.
+- [x] Research and add branded booking pages with doctor, cabinet, phone, and only available slots.
+- [x] Verify core calendar, sign-in, public booking, privacy and occupied-slot rejection.
+- [ ] Import existing records and users — blocked on missing CSV/JSON exports.
+- [ ] Verify existing uploaded files and handwritten OCR — blocked on missing sample/export files.
