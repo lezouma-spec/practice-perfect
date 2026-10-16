@@ -1,0 +1,17 @@
+alter table public.clinic_settings add column timezone text not null default 'Africa/Tunis', add column opens_at time not null default '09:00', add column closes_at time not null default '17:00', add column working_days integer[] not null default array[1,2,3,4,5], add column slot_minutes integer not null default 30 check(slot_minutes in(15,30,45,60)), add column booking_notice_hours integer not null default 2 check(booking_notice_hours between 0 and 168);
+alter table public.booking_requests add column appointment_id uuid references public.appointments(id) on delete set null;
+create function public.available_slots(c uuid) returns table(starts_at timestamptz,ends_at timestamptz) language sql stable security definer set search_path=public as $$
+select slot, slot + make_interval(mins=>s.slot_minutes) from public.clinic_settings s cross join lateral generate_series((now() at time zone s.timezone)::date, (now() at time zone s.timezone)::date+30,interval '1 day') day cross join lateral generate_series(((day::date+s.opens_at) at time zone s.timezone),((day::date+s.closes_at) at time zone s.timezone)-make_interval(mins=>s.slot_minutes),make_interval(mins=>s.slot_minutes)) slot where s.id=c and s.booking_enabled and extract(isodow from day)::integer=any(s.working_days) and slot>now()+make_interval(hours=>s.booking_notice_hours) and not exists(select 1 from public.appointments a where a.clinic_id=c and a.status in('scheduled','done') and tstzrange(a.starts_at,a.ends_at,'[)') && tstzrange(slot,slot+make_interval(mins=>s.slot_minutes),'[)')) order by slot $$;
+grant execute on function public.available_slots(uuid) to anon,authenticated;
+create function public.reserve_slot(c uuid, chosen timestamptz, patient_name text, patient_phone text) returns uuid language plpgsql security definer set search_path=public as $$ declare p uuid; a uuid; finish timestamptz; begin
+if char_length(trim(patient_name)) not between 2 and 100 or patient_phone !~ '^[+0-9 ]{8,20}$' then raise exception 'Informations invalides'; end if;
+perform pg_advisory_xact_lock(hashtext(c::text));
+select ends_at into finish from public.available_slots(c) where starts_at=chosen;
+if finish is null then raise exception 'Ce créneau n’est plus disponible'; end if;
+insert into public.patients(clinic_id,full_name,phone) values(c,trim(patient_name),trim(patient_phone)) returning id into p;
+insert into public.appointments(clinic_id,patient_id,starts_at,ends_at,reason) values(c,p,chosen,finish,'Consultation') returning id into a;
+insert into public.booking_requests(clinic_id,full_name,phone,preferred,status,appointment_id) values(c,trim(patient_name),trim(patient_phone),chosen::text,'confirmed',a);
+return a; end $$;
+grant execute on function public.reserve_slot(uuid,timestamptz,text,text) to anon,authenticated;
+create function public.booking_clinic(c uuid) returns table(id uuid,clinic_name text,doctor_name text,address text,phone text,timezone text,slot_minutes integer) language sql stable security definer set search_path=public as $$select id,clinic_name,doctor_name,address,phone,timezone,slot_minutes from public.clinic_settings where id=c and booking_enabled$$; grant execute on function public.booking_clinic(uuid) to anon,authenticated;
+create table public.legacy_user_mappings (original_user_id text primary key, verified_email text not null unique, user_id uuid unique, clinic_id uuid references public.clinic_settings(id)); grant all on public.legacy_user_mappings to service_role; alter table public.legacy_user_mappings enable row level security;

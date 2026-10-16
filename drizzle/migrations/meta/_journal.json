@@ -8,6 +8,13 @@
       "when": 1792107925734,
       "tag": "0000_independent_dental_clinics",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1792108867303,
+      "tag": "0001_available_slot_booking",
+      "breakpoints": true
     }
   ]
 }
