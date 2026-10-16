@@ -15,6 +15,13 @@
       "when": 1792108867303,
       "tag": "0001_available_slot_booking",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1792109179062,
+      "tag": "0002_restrict_internal_workspace_helpers",
+      "breakpoints": true
     }
   ]
 }
