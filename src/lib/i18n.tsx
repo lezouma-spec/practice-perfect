@@ -1,3 +1,4 @@
+import { Button } from "@/components/ui/button";
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
 
 export type Lang = "fr" | "ar";
@@ -59,8 +60,8 @@ export const useT = () => useContext(Ctx);
 export function LangToggle({ className = "" }: { className?: string }) {
   const { lang, setLang } = useT();
   return (
-    <button onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className={`rounded-lg border px-2.5 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground ${className}`}>
+    <Button variant="outline" size="sm" onClick={() => setLang(lang === "fr" ? "ar" : "fr")} className={`rounded-lg border px-2.5 py-1 text-sm font-medium text-muted-foreground transition-colors hover:text-foreground ${className}`}>
       {lang === "fr" ? "العربية" : "Français"}
-    </button>
+    </Button>
   );
 }
