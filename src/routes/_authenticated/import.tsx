@@ -65,7 +65,7 @@ function ImportPage() {
     setBusy(true);
     for (let i = 0; i < rows.length; i += 200) {
       const { error } = await supabase.from("patients").insert(rows.slice(i, i + 200).map((r) => ({ ...r, full_name: r["full_name"].slice(0, 120) })));
-      if (error) { setBusy(false); return toast.error(error.message); }
+      if (error) { setBusy(false); { toast.error(error.message); return; } }
     }
     setBusy(false);
     toast.success(`${rows.length} patients importés`);

@@ -4,7 +4,7 @@ import type { Lang } from "@/lib/i18n";
 export const TEMPLATE_KINDS = ["certificate", "quote", "postop", "consent"];
 
 type P = { full_name: string };
-type S = { days?: string; text?: string; lines?: string };
+type S = { days?: string | undefined; text?: string | undefined; lines?: string | undefined };
 
 const POSTOP = {
   fr: [

@@ -1,1 +1,61 @@
-{"source":"code-archive","capabilities":[{"capability":"application code and routes","source":"uploaded archive","outcome":"preserve and repair","status":"in_progress","next_action":"import compatible source"},{"capability":"schema and authorization","source":"SQL migration","outcome":"migrate to clinic-isolated Lovable Cloud","status":"in_progress","next_action":"replace single-clinic access"},{"capability":"existing records and auth identities","source":"not included","outcome":"migrate","status":"pending","next_action":"request sanitized CSV or JSON exports after preview"},{"capability":"uploaded file bytes","source":"no exports","outcome":"preserve document fields","status":"pending","next_action":"request existing file exports if any"},{"capability":"OCR provider","source":"ocr.functions.ts","outcome":"preserve","status":"in_progress","next_action":"inspect and verify gateway"},{"capability":"public booking and patient share","source":"public routes","outcome":"preserve with clinic scoping","status":"in_progress","next_action":"repair public clinic selection"},{"capability":"callbacks webhooks schedules payments email","source":"source audit","outcome":"inspect","status":"in_progress","next_action":"confirm call sites"},{"capability":"cutover and verification","source":"new preview","outcome":"verify","status":"in_progress","next_action":"test authenticated workflows"}]}
+{
+  "source": "code-archive",
+  "capabilities": [
+    {
+      "capability": "application code and routes",
+      "source": "uploaded archive",
+      "outcome": "preserve and repair",
+      "status": "verified",
+      "next_action": "None for core tested flows"
+    },
+    {
+      "capability": "schema and authorization",
+      "source": "SQL migration",
+      "outcome": "migrate to clinic-isolated Lovable Cloud",
+      "status": "verified",
+      "next_action": "None for core tested flows"
+    },
+    {
+      "capability": "existing records and auth identities",
+      "source": "not included",
+      "outcome": "migrate",
+      "status": "pending",
+      "next_action": "request sanitized CSV or JSON exports after preview"
+    },
+    {
+      "capability": "uploaded file bytes",
+      "source": "no exports",
+      "outcome": "preserve document fields",
+      "status": "pending",
+      "next_action": "request existing file exports if any"
+    },
+    {
+      "capability": "OCR provider",
+      "source": "ocr.functions.ts",
+      "outcome": "preserve",
+      "status": "implemented_unverified",
+      "next_action": "Provide a representative non-sensitive handwritten image to verify extraction."
+    },
+    {
+      "capability": "public booking and patient share",
+      "source": "public routes",
+      "outcome": "preserve with clinic scoping",
+      "status": "partially_verified",
+      "next_action": "Core calendar, booking, login and privacy verified; patient share and all medical document flows need broader regression coverage."
+    },
+    {
+      "capability": "callbacks webhooks schedules payments email",
+      "source": "source audit",
+      "outcome": "inspect",
+      "status": "not_detected",
+      "next_action": "No external callbacks, schedules, payment provider, or app email provider detected in source; Cloud auth email delivery remains unverified."
+    },
+    {
+      "capability": "cutover and verification",
+      "source": "new preview",
+      "outcome": "verify",
+      "status": "partially_verified",
+      "next_action": "Core authenticated flows, data isolation and collision rejection pass; existing records, imported-user identity linking, OCR and broader document regression remain pending."
+    }
+  ]
+}

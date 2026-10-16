@@ -64,6 +64,7 @@ export type Database = {
       }
       booking_requests: {
         Row: {
+          appointment_id: string | null
           clinic_id: string
           created_at: string
           full_name: string
@@ -73,6 +74,7 @@ export type Database = {
           status: string
         }
         Insert: {
+          appointment_id?: string | null
           clinic_id?: string
           created_at?: string
           full_name: string
@@ -82,6 +84,7 @@ export type Database = {
           status?: string
         }
         Update: {
+          appointment_id?: string | null
           clinic_id?: string
           created_at?: string
           full_name?: string
@@ -91,6 +94,13 @@ export type Database = {
           status?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "booking_requests_appointment_id_fkey"
+            columns: ["appointment_id"]
+            isOneToOne: false
+            referencedRelation: "appointments"
+            referencedColumns: ["id"]
+          },
           {
             foreignKeyName: "booking_requests_clinic_id_fkey"
             columns: ["clinic_id"]
@@ -104,41 +114,59 @@ export type Database = {
         Row: {
           address: string | null
           booking_enabled: boolean
+          booking_notice_hours: number
           clinic_name: string
+          closes_at: string
           doctor_name: string
           id: string
           matricule: string | null
+          opens_at: string
           owner_id: string
           phone: string | null
           signature_data: string | null
+          slot_minutes: number
           stamp_data: string | null
+          timezone: string
           updated_at: string
+          working_days: number[]
         }
         Insert: {
           address?: string | null
           booking_enabled?: boolean
+          booking_notice_hours?: number
           clinic_name?: string
+          closes_at?: string
           doctor_name?: string
           id?: string
           matricule?: string | null
+          opens_at?: string
           owner_id: string
           phone?: string | null
           signature_data?: string | null
+          slot_minutes?: number
           stamp_data?: string | null
+          timezone?: string
           updated_at?: string
+          working_days?: number[]
         }
         Update: {
           address?: string | null
           booking_enabled?: boolean
+          booking_notice_hours?: number
           clinic_name?: string
+          closes_at?: string
           doctor_name?: string
           id?: string
           matricule?: string | null
+          opens_at?: string
           owner_id?: string
           phone?: string | null
           signature_data?: string | null
+          slot_minutes?: number
           stamp_data?: string | null
+          timezone?: string
           updated_at?: string
+          working_days?: number[]
         }
         Relationships: []
       }
@@ -208,6 +236,35 @@ export type Database = {
         Relationships: [
           {
             foreignKeyName: "inventory_items_clinic_id_fkey"
+            columns: ["clinic_id"]
+            isOneToOne: false
+            referencedRelation: "clinic_settings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      legacy_user_mappings: {
+        Row: {
+          clinic_id: string | null
+          original_user_id: string
+          user_id: string | null
+          verified_email: string
+        }
+        Insert: {
+          clinic_id?: string | null
+          original_user_id: string
+          user_id?: string | null
+          verified_email: string
+        }
+        Update: {
+          clinic_id?: string | null
+          original_user_id?: string
+          user_id?: string | null
+          verified_email?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "legacy_user_mappings_clinic_id_fkey"
             columns: ["clinic_id"]
             isOneToOne: false
             referencedRelation: "clinic_settings"
@@ -449,6 +506,25 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      available_slots: {
+        Args: { c: string }
+        Returns: {
+          ends_at: string
+          starts_at: string
+        }[]
+      }
+      booking_clinic: {
+        Args: { c: string }
+        Returns: {
+          address: string
+          clinic_name: string
+          doctor_name: string
+          id: string
+          phone: string
+          slot_minutes: number
+          timezone: string
+        }[]
+      }
       clinic_accepts_booking: { Args: { c: string }; Returns: boolean }
       current_clinic: { Args: never; Returns: string }
       has_role: {
@@ -467,6 +543,15 @@ export type Database = {
           id: string
           phone: string
         }[]
+      }
+      reserve_slot: {
+        Args: {
+          c: string
+          chosen: string
+          patient_name: string
+          patient_phone: string
+        }
+        Returns: string
       }
     }
     Enums: {

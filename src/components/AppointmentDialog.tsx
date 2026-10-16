@@ -69,7 +69,7 @@ export function AppointmentDialog({ open, onOpenChange, draft, canDelete }: { op
           <div className="space-y-1.5">
             <div className="flex items-center justify-between"><Label>Patient</Label><Button size="sm" variant="ghost" onClick={() => setCreatePatient(true)}><UserPlus className="size-4" /> Nouveau patient</Button></div>
             <Input placeholder="Rechercher nom ou téléphone…" value={search} onChange={(e) => setSearch(e.target.value)} />
-            <Select value={f.patient_id} onValueChange={(v) => setF({ ...f, patient_id: v })}>
+            <Select value={f.patient_id ?? ""} onValueChange={(v) => setF({ ...f, patient_id: v })}>
               <SelectTrigger><SelectValue placeholder="Choisir un patient" /></SelectTrigger>
               <SelectContent>{filtered.map((p) => <SelectItem key={p.id} value={p.id}>{p.full_name}{p.phone ? ` · ${p.phone}` : ""}</SelectItem>)}</SelectContent>
             </Select>

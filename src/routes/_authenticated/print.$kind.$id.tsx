@@ -10,10 +10,10 @@ import { useT } from "@/lib/i18n";
 import { TemplateBody, TEMPLATE_KINDS } from "@/components/DocTemplates";
 
 export const Route = createFileRoute("/_authenticated/print/$kind/$id")({
-  validateSearch: (s: Record<string, unknown>): { days?: string; text?: string; lines?: string } => ({
-    days: typeof s.days === "string" ? s.days.slice(0, 4) : undefined,
-    text: typeof s.text === "string" ? s.text.slice(0, 2000) : undefined,
-    lines: typeof s.lines === "string" ? s.lines.slice(0, 3000) : undefined,
+  validateSearch: (s: Record<string, unknown>): { days?: string | undefined; text?: string | undefined; lines?: string | undefined } => ({
+    days: typeof s["days"] === "string" ? s["days"].slice(0, 4) : undefined,
+    text: typeof s["text"] === "string" ? s["text"].slice(0, 2000) : undefined,
+    lines: typeof s["lines"] === "string" ? s["lines"].slice(0, 3000) : undefined,
   }),
   head: () => ({ meta: [{ title: "Impression — Dentics" }, { name: "description", content: "Impression — Dentics : espace professionnel de votre cabinet dentaire." }, { property: "og:title", content: "Impression — Dentics" }, { property: "og:description", content: "Impression — Dentics : gestion de votre cabinet." }, { property: "og:type", content: "website" }, { name: "twitter:card", content: "summary_large_image" }] }),
   component: PrintPage,

@@ -17,7 +17,7 @@ export const Route = createFileRoute("/_authenticated/calendar")({
   component: CalendarPage,
 });
 
-const START = 8, END = 19, PX = 56; // px per hour
+const START = 8, END = 19, PX = 88; // px per hour
 
 function CalendarPage() {
   const { data: me } = useRole();
@@ -85,8 +85,9 @@ function CalendarPage() {
                     onClick={() => setDraft({ id: a.id, patient_id: a.patient_id, date: format(s, "yyyy-MM-dd"), time: format(s, "HH:mm"), duration: differenceInMinutes(new Date(a.ends_at), s), reason: a.reason ?? "", status: a.status })}
                     className={cn("absolute inset-x-1 overflow-hidden rounded-lg border-l-4 px-2 py-1 text-left text-xs shadow-soft transition-transform hover:scale-[1.01]",
                       a.status === "done" ? "border-success bg-success-soft" : a.status === "no_show" ? "border-destructive bg-danger-soft" : "border-primary bg-primary-soft")}
+                    title={`${format(s, "HH:mm")} · ${a.patients?.full_name ?? "Patient"} · ${a.reason ?? ""}`}
                     style={{ top, height: h }}>
-                    <p className="font-semibold">{format(s, "HH:mm")} · {a.patients?.full_name}</p>
+                    <p className="truncate font-semibold">{format(s, "HH:mm")} · {a.patients?.full_name}</p>
                     <p className="truncate text-muted-foreground">{a.reason}</p>
                   </button>
                 );

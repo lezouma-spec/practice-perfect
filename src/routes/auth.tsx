@@ -1,6 +1,6 @@
 import { useT, LangToggle } from "@/lib/i18n";
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Stethoscope, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
@@ -24,15 +24,18 @@ export const Route = createFileRoute("/auth")({
 
 function AuthPage() {
   const { t } = useT();
-  const [mode, setMode] = useState<"in" | "up" | "reset">("in");
+  const [mode, setMode] = useState<"in" | "up" | "reset" | "password">("in");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
+  useEffect(() => { const { data } = supabase.auth.onAuthStateChange(event => { if (event === "PASSWORD_RECOVERY") setMode("password"); }); return () => data.subscription.unsubscribe(); }, []);
+
   async function submit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
+    if (mode === "password") { const { error } = await supabase.auth.updateUser({ password }); setLoading(false); if (error) { toast.error("Modification impossible"); return; } toast.success("Mot de passe modifié"); navigate({ to: "/dashboard" }); return; }
     if (mode === "reset") {
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/auth` });
       setLoading(false);
@@ -62,14 +65,14 @@ function AuthPage() {
           Dentics
         </Link>
         <div className="mb-2 flex justify-end"><LangToggle /></div>
-        <h1 className="text-2xl font-semibold">{mode === "reset" ? "Mot de passe oublié" : mode === "in" ? t("Bon retour") : "Créer mon cabinet"}</h1>
+        <h1 className="text-2xl font-semibold">{mode === "password" ? "Nouveau mot de passe" : mode === "reset" ? "Mot de passe oublié" : mode === "in" ? t("Bon retour") : "Créer mon cabinet"}</h1>
         <p className="mt-1 text-sm text-muted-foreground">
           {mode === "in" ? t("Accédez à l'espace du cabinet.") : "Chaque cabinet dispose de son propre espace privé."}
         </p>
         <form onSubmit={submit} className="mt-6 space-y-4">
           <div className="space-y-1.5"><Label>{t("Email")}</Label><Input type="email" required value={email} onChange={(e) => setEmail(e.target.value)} /></div>
           {mode !== "reset" && <div className="space-y-1.5"><Label>{t("Mot de passe")}</Label><Input type="password" required minLength={8} value={password} onChange={(e) => setPassword(e.target.value)} /></div>}
-          <Button className="h-11 w-full rounded-xl" disabled={loading}>{loading && <Loader2 className="animate-spin" />}{mode === "reset" ? "Envoyer le lien" : mode === "in" ? t("Se connecter") : "Créer mon cabinet"}</Button>
+          <Button type="submit" className="h-11 w-full rounded-xl" disabled={loading}>{loading && <Loader2 className="animate-spin" />}{mode === "reset" ? "Envoyer le lien" : mode === "in" ? t("Se connecter") : "Créer mon cabinet"}</Button>
         </form>
         {mode === "in" && <Button variant="ghost" className="mt-2 w-full text-sm" onClick={() => setMode("reset")}>Mot de passe oublié ?</Button>}
         <Button variant="ghost" className="mt-4 w-full text-center text-sm text-muted-foreground hover:text-foreground" onClick={() => setMode(mode === "in" ? "up" : "in")}>
